@@ -1,0 +1,47 @@
+{
+  "Controllers": [
+    "Api",
+    "Auth",
+    "Admin"
+  ],
+  "Repositories": [
+    "Base",
+    "Builder",
+    "Share"
+  ],
+  "Services": [
+    "Email",
+    "Logging"
+  ],
+  "DyModels": [
+    {
+      "VM": [ ],
+      "Dto": {
+        "Build": [
+          "Request",
+          "Response",
+          "ResponseT"
+        ],
+        "Share": [
+          "Request",
+          "Response"
+        ]
+      },
+      "Dso": [
+        "Request",
+        "Response"
+      ]
+
+    }
+  ],
+  "Config": [ "Mappers", "Scopes", "Singletons", "Transients" ],
+  "Models": [],
+  "Builders": [
+    "Db"
+  ],
+
+  "Helper": [],
+  "Data": [],
+  "Enums": []
+
+}
