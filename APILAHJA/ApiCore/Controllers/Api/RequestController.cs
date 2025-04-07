@@ -81,7 +81,16 @@ namespace ApiCore.Controllers.Api
                 return StatusCode(500, "Internal Server Error");
             }
         }
+       
+      
+        //[HttpPost("CreateEvent")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<ActionResult<EventRequestResponse>> CreateEvent(EventRequestRequest resultRequest)
+        //{
 
+        //}
         // // Get a Request by Lg.
         [HttpGet("GetRequestByLanguage", Name = "GetRequestByLg")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

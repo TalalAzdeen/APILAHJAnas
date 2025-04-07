@@ -53,9 +53,15 @@ namespace ApiCore.DyModels.Dto.Build.Responses
         /// SubscriptionId property for DTO.
         /// </summary>
         public String? SubscriptionId { get; set; }
-        public SubscriptionResponseBuildDto? Subscription { get; set; }
-        public ICollection<RequestResponseBuildDto>? Requests { get; set; }
-        public ICollection<RequestResponseBuildDto>? Requests2 { get; set; }
-        public RequestResponseBuildDto[]? Requests3 { get; set; }
+
+
+
+
+
+
+        //public SubscriptionResponseBuildDto? Subscription { get; set; }
+        //public ICollection<RequestResponseBuildDto>? Requests { get; set; }
+        //public ICollection<RequestResponseBuildDto>? Requests2 { get; set; }
+        //public RequestResponseBuildDto[]? Requests3 { get; set; }
     }
 }

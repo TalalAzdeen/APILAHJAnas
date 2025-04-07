@@ -21,8 +21,8 @@ namespace AutoGenerator.Config
     }
 
 
-
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+     
+    [AttributeUsage(AttributeTargets.Property , Inherited = false, AllowMultiple = false)]
     public class FilterLGEnabledAttribute : Attribute
     {
         public bool IsEnable { get; set; }
@@ -50,7 +50,7 @@ namespace AutoGenerator.Config
 
 
 
-    public class GlobalAttribute
+    public  class GlobalAttribute
     {
 
         public static bool CheckFilterLGEnabled(Type type)

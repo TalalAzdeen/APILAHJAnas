@@ -27,14 +27,14 @@ namespace ApiCore.DyModels.VMs
         ///
         public Nullable<Single> Bandwidth { get; set; }
         ///
-        public String? Token { get; set; }
+      //lic String? Token { get; set; }
         ///
         public String? SubscriptionId { get; set; }
         //
-        public ICollection<RequestCreateVM>? Requests { get; set; }
-        //
-        public ICollection<RequestCreateVM>? Requests2 { get; set; }
-        //
-        public RequestCreateVM[]? Requests3 { get; set; }
+        //public ICollection<RequestCreateVM>? Requests { get; set; }
+        ////
+        //public ICollection<RequestCreateVM>? Requests2 { get; set; }
+        ////
+        //public RequestCreateVM[]? Requests3 { get; set; }
     }
 }

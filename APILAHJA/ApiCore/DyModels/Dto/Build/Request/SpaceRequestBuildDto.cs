@@ -11,7 +11,7 @@ namespace ApiCore.DyModels.Dto.Build.Requests
         /// <summary>
         /// Id property for DTO.
         /// </summary>
-        public String? Id { get; set; }
+       
         /// <summary>
         /// Name property for DTO.
         /// </summary>
@@ -43,15 +43,22 @@ namespace ApiCore.DyModels.Dto.Build.Requests
         /// <summary>
         /// Bandwidth property for DTO.
         /// </summary>
-        public Nullable<Single> Bandwidth { get; set; }
+        /// 
+      public Nullable<Single> Bandwidth { get; set; }
+
+        public String? Token { get; set; } = "string";
+
         /// <summary>
         /// Token property for DTO.
         /// </summary>
-        public String? Token { get; set; }
+
         /// <summary>
         /// SubscriptionId property for DTO.
         /// </summary>
         public String? SubscriptionId { get; set; }
+
+        public RoleCase roleCase { get; set; }
+
         //public SubscriptionRequestBuildDto? Subscription { get; set; }
         //public ICollection<RequestRequestBuildDto>? Requests { get; set; }
         //public ICollection<RequestRequestBuildDto>? Requests2 { get; set; }

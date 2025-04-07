@@ -40,8 +40,8 @@ namespace ApiCore.DyModels.Dto.Build.Responses
         /// CreatedAt property for DTO.
         /// </summary>
         public DateTime CreatedAt { get; set; }
-        public ICollection<PlanFeatureResponseBuildDto>? PlanFeatures { get; set; }
-        //public ICollection<SubscriptionResponseBuildDto>? Subscriptions { get; set; }
+        //public ICollection<pla>? PlanFeatures { get; set; }
+      //  public ICollection<SubscriptionResponseBuildDto>? Subscriptions { get; set; }
         // public ICollection<PlanFeatureResponseBuildDto>? PlanFeatures { get; set; }
     }
 }

@@ -12,21 +12,21 @@ using System.Security.Cryptography;
 namespace AutoGenerator.Config
 {
 
-
+     
     public static class AutoConfigall
     {
-
+       
         public static void AddAutoScope(this IServiceCollection serviceCollection, Assembly? assembly)
         {
 
-            var scopes = assembly.GetTypes().Where(t => typeof(ITScope).IsAssignableFrom(t)).AsParallel().ToList();
+            var scopes = assembly.GetTypes().Where(t => typeof(ITScope).IsAssignableFrom(t) ).AsParallel().ToList();
             var Iscopeshare = scopes.Where(t => typeof(ITBaseShareRepository).IsAssignableFrom(t) && t.IsInterface).AsParallel().ToList();
             var cscopeshare = scopes.Where(t => typeof(ITBaseShareRepository).IsAssignableFrom(t) && t.IsClass).AsParallel().ToList();
-            foreach (var Iscope in Iscopeshare)
+              foreach (var Iscope in Iscopeshare)
             {
 
-                var cscope = cscopeshare.Where(t => Iscope.IsAssignableFrom(t)).FirstOrDefault();
-                if (cscope != null)
+                var cscope= cscopeshare.Where(t => Iscope.IsAssignableFrom(t)).FirstOrDefault();
+                if(cscope != null)
                 {
                     serviceCollection.AddScoped(Iscope, cscope);
                 }
@@ -34,14 +34,14 @@ namespace AutoGenerator.Config
                 {
 
                 }
-
+               
             }
 
             var Iscopeservis = scopes.Where(t => typeof(ITBaseService).IsAssignableFrom(t) && t.IsInterface).AsParallel().ToList();
             var cscopeservis = scopes.Where(t => typeof(ITBaseService).IsAssignableFrom(t) && t.IsClass).AsParallel().ToList();
             foreach (var Iscope in Iscopeservis)
             {
-                if (!Iscope.Name.Contains("IUse"))
+                if(!Iscope.Name.Contains("IUse"))
                 {
                     continue;
                 }
@@ -60,7 +60,7 @@ namespace AutoGenerator.Config
 
         public static void AddAutoSingleton(this IServiceCollection serviceCollection, Assembly? assembly)
         {
-
+          
             var singletons = assembly.GetTypes().Where(t => typeof(ITSingleton).IsAssignableFrom(t) && t.IsClass).ToList();
             foreach (var singleton in singletons)
             {
@@ -70,17 +70,17 @@ namespace AutoGenerator.Config
 
             serviceCollection.AddSingleton<IConditionChecker>(provider =>
             {
-                var checker = new ConditionChecker();
+                var checker =new  ConditionChecker();
                 ConfigValidator.Register(checker, assembly);
                 return checker;
 
             });
-
+            
         }
 
         public static void AddAutoTransient(this IServiceCollection serviceCollection, Assembly? assembly)
         {
-
+         
             var transients = assembly.GetTypes().Where(t => typeof(ITTransient).IsAssignableFrom(t) && t.IsClass).ToList();
             foreach (var transient in transients)
             {
@@ -102,11 +102,11 @@ namespace AutoGenerator.Config
             return attribute != null && attribute.IgnoreMapping;
         }
 
-        public static Assembly? AssemblyShare { get; set; }
+        public  static Assembly? AssemblyShare { get; set; }
         public MappingConfig()
         {
 
-
+            
             var assembly = AssemblyShare;
 
             var assemblymodel = Assembly.GetExecutingAssembly();
@@ -132,7 +132,7 @@ namespace AutoGenerator.Config
                     foreach (var dto in dtoMatches)
                     {
 
-                        CreateMap(model, dto).AfterMap((src, dest, context) =>
+                        CreateMap(model, dto).AfterMap((src, dest,context) =>
                         {
 
 
@@ -140,7 +140,7 @@ namespace AutoGenerator.Config
 
                         });
 
-                        CreateMap(dto, model).AfterMap((src, dest, context) =>
+                        CreateMap(dto,model).AfterMap((src, dest, context) =>
                         {
 
 
@@ -194,7 +194,7 @@ namespace AutoGenerator.Config
 
                             });
 
-                            CreateMap(vm, dso).AfterMap((src, dest, context) =>
+                            CreateMap(vm,dso).AfterMap((src, dest, context) =>
                             {
 
 

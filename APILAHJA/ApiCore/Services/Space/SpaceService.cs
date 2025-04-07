@@ -13,15 +13,24 @@ using System.Linq.Expressions;
 using ApiCore.Repositorys.Builder;
 using AutoGenerator.Repositorys.Base;
 using System;
+using APILAHJA.ApiCore.Helper;
+using AutoGenerator.Helper.Translation;
+using Stripe;
+using TEP.Helper.Extensions;
+using AutoGenerator.Utilities;
+using Api.VM;
 
 namespace ApiCore.Services.Services
 {
     public class SpaceService : BaseService<SpaceRequestDso, SpaceResponseDso>, IUseSpaceService
     {
         private readonly ISpaceShareRepository _builder;
-        public SpaceService(ISpaceShareRepository buildSpaceShareRepository, IMapper mapper, ILoggerFactory logger) : base(mapper, logger)
+        private readonly IUserClaims _userClaims;
+        private readonly ISubscriptionShareRepository _subscriptionShare;
+        public SpaceService(ISpaceShareRepository buildSpaceShareRepository, IMapper mapper, ILoggerFactory logger, ISubscriptionShareRepository subscriptionShare) : base(mapper, logger)
         {
             _builder = buildSpaceShareRepository;
+            _subscriptionShare = subscriptionShare;
         }
 
         public override Task<int> CountAsync()
@@ -43,6 +52,40 @@ namespace ApiCore.Services.Services
             try
             {
                 _logger.LogInformation("Creating new Space entity...");
+
+
+                //entity.roleCase.Add("space-limit", _ =>
+                //    subscriptionService.IsSpaceAvailable().Result ? new object() : null);
+
+
+                //entity.roleCase.Add("has-services", _ =>
+                //       (_userClaims.ServicesIds != null && _userClaims.ServicesIds.Count > 0) ? new object() : null);
+
+                //entity. roleCase.Add("has-createspace-service", _ =>
+                //{
+                //    var service = serviceRepository.GetByName("createspace").Result;
+                //    return _userClaims.ServicesIds.Contains(service.Id) ? new object() : null;
+                //});
+
+
+
+
+
+                //var preview = entity.roleCase.PreviewRoles();
+
+                //if (!preview["space-limit"])
+                //    throw new  ExceptionHandlerExtensions(HandelErrors.Problem("Create space", "You cannot add a space because you have reached the allowed limit."));
+
+                //if (!preview["has-services"])
+                //    return BadRequest(HandelErrors.Problem("Create space", "This session does not have service create space."));
+
+                //if (!preview["has-createspace-service"])
+                //    return NotFound(HandelErrors.Problem("Create space", "You cannot add a space because this session does not belong to service create space."));
+
+               // item.SubscriptionId = (await _subscriptionShare.GetSubscription()).Id;
+
+
+
                 var result = await _builder.CreateAsync(entity);
                 var output = GetMapper().Map<SpaceResponseDso>(result);
                 _logger.LogInformation("Created Space entity successfully.");

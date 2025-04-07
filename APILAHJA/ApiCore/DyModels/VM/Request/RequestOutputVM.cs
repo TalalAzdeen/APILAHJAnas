@@ -62,6 +62,6 @@ namespace ApiCore.DyModels.VMs
        
        // public ICollection<EventRequestResponseBuildDto>? Events { get; set; }
         //
-        public ICollection<EventRequestOutputVM>? Events { get; set; }
+      //  public ICollection<EventRequestOutputVM>? Events { get; set; }
     }
 }
