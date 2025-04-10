@@ -6,7 +6,6 @@ using AutoGenerator.Repositorys.Builder;
 using ApiCore.DyModels.Dto.Build.Requests;
 using ApiCore.DyModels.Dto.Build.Responses;
 using AutoGenerator.Models;
-using AutoGenerator.Helper.Translation;
 using ApiCore.DyModels.Dto.Share.Requests;
 using ApiCore.DyModels.Dto.Share.Responses;
 using ApiCore.Repositorys.Builder;
@@ -14,6 +13,7 @@ using AutoGenerator.Repositorys.Share;
 using System.Linq.Expressions;
 using AutoGenerator.Repositorys.Base;
 using AutoGenerator;
+using AutoGenerator.Helper;
 using System;
 
 namespace ApiCore.Repositorys.Share
@@ -80,50 +80,10 @@ namespace ApiCore.Repositorys.Share
         /// </summary>
         public override async Task<IEnumerable<CategoryModelResponseShareDto>> GetAllAsync()
         {
-
-
-            //TranslationData translation = new TranslationData
-            //{
-            //    Value = new Dictionary<string, string>
-            //{
-            //    { "en", "Category Name" },
-            //    { "ar", "«”„ «·›∆…" },
-            //    { "fr", "Nom de la catÈgorie" }
-            //}
-            //};
-
-            //// ≈‰‘«¡ ﬂ«∆‰ DTO ··›∆…
-            //CategoryModelResponseBuildDto category = new CategoryModelResponseBuildDto
-            //{
-            //    Id = "123",
-            //    Name = translation,
-            //    Description = new TranslationData
-            //    {
-            //        Value = new Dictionary<string, string>
-            //    {
-            //        { "en", "This is a sample category" },
-            //        { "ar", "Â–Â ›∆…  Ã—Ì»Ì…" },
-            //        { "fr", "Ceci est une catÈgorie d'exemple" }
-            //    }
-            //    }
-            //};
-            //return MapToIEnumerableShareResponseDto(new List<CategoryModelResponseBuildDto> { category });
             try
             {
-                /// Method to retrieve data as an IQueryable object.
-
-             
                 _logger.LogInformation("Retrieving all CategoryModel entities...");
-                var item = await _builder.GetAllAsync();
-                if (item == null)
-                {
-
-                    _logger.LogWarning("No CategoryModel entities found.");
-
-
-                    return new List<CategoryModelResponseShareDto>();
-                }
-                return MapToIEnumerableShareResponseDto(item);
+                return MapToIEnumerableShareResponseDto(await _builder.GetAllAsync());
             }
             catch (Exception ex)
             {
@@ -139,8 +99,6 @@ namespace ApiCore.Repositorys.Share
         {
             try
             {
-
-
                 _logger.LogInformation($"Retrieving CategoryModel entity with ID: {id}...");
                 return MapToShareResponseDto(await _builder.GetByIdAsync(id));
             }
@@ -260,6 +218,11 @@ namespace ApiCore.Repositorys.Share
             }
         }
 
+        public override Task DeleteAsync(string id)
+        {
+            return _builder.DeleteAsync(id);
+        }
+
         public override async Task DeleteAsync(object value, string key = "Id")
         {
             try
@@ -286,6 +249,35 @@ namespace ApiCore.Repositorys.Share
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple CategoryModels.");
+            }
+        }
+
+        public override async Task<PagedResponse<CategoryModelResponseShareDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving  CategoryModel entities as pagination...");
+                return MapToPagedResponse(await _builder.GetAllByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetAllByAsync for CategoryModel entities as pagination.");
+                return null;
+            }
+        }
+
+        public override async Task<CategoryModelResponseShareDto?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving CategoryModel entity...");
+                var results = await _builder.GetAllAsync();
+                return MapToShareResponseDto(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetOneByAsync  for CategoryModel entity.");
+                return null;
             }
         }
     }

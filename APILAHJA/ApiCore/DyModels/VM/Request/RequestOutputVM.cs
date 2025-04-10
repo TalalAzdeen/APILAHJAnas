@@ -2,6 +2,7 @@ using AutoGenerator;
 using AutoGenerator.Models;
 using AutoGenerator.Helper.Translation;
 using System;
+using ApiCore.DyModels.Dso.Responses;
 
 namespace ApiCore.DyModels.VMs
 {
@@ -60,7 +61,7 @@ namespace ApiCore.DyModels.VMs
         /// </summary>
         public String? SpaceId { get; set; }
        
-       // public ICollection<EventRequestResponseBuildDto>? Events { get; set; }
+        public ICollection<EventRequestResponseDso>? Events { get; set; }
         //
       //  public ICollection<EventRequestOutputVM>? Events { get; set; }
     }

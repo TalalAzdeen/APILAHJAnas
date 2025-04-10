@@ -12,22 +12,23 @@ using ApiCore.Repositorys.Share;
 using System.Linq.Expressions;
 using ApiCore.Repositorys.Builder;
 using AutoGenerator.Repositorys.Base;
+using AutoGenerator.Helper;
 using System;
-using APILAHJA.ApiCore.Helper;
+using AutoGenerator.Conditions;
+using ApiCore.Validators;
 
 namespace ApiCore.Services.Services
 {
     public class RequestService : BaseService<RequestRequestDso, RequestResponseDso>, IUseRequestService
     {
         private readonly IRequestShareRepository _builder;
-        //private readonly IUserClaims _userClaims;
-        public RequestService(IRequestShareRepository buildRequestShareRepository, IMapper mapper, ILoggerFactory logger) : base(mapper, logger)
+        private readonly IConditionChecker _checker;
+        public RequestService(IRequestShareRepository buildRequestShareRepository, IMapper mapper, ILoggerFactory logger, IConditionChecker checker) : base(mapper, logger)
         {
+
             _builder = buildRequestShareRepository;
-           // _userClaims = claims;
-
+            _checker = checker;
         }
-
 
         public override Task<int> CountAsync()
         {
@@ -48,10 +49,46 @@ namespace ApiCore.Services.Services
             try
             {
                 _logger.LogInformation("Creating new Request entity...");
-                var result = await _builder.CreateAsync(entity);
-                var output = GetMapper().Map<RequestResponseDso>(result);
-                _logger.LogInformation("Created Request entity successfully.");
-                return output;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                string errorMessage = "";
+                //var ConditionResult =_checker.Check(RequestValidatorStates.IsFull, entity);
+               // var resultt= _checker. CheckAllWithDetails<RequestValidatorStates>(entity, out Dictionary<RequestValidatorStates, string> results);
+                var isConditionresult = _checker.CheckAndResult(RequestValidatorStates.IsFull, entity);
+               // bool isConditionMetWithError = _checker.CheckWithError(RequestValidatorStates.IsFull, entity, out errorMessage);
+                if ((bool)isConditionresult.Success)
+                {
+                    //_logger.LogInformation("Created Request entity successfully.");
+                    // return null;
+
+                    var result = await _builder.CreateAsync(entity);
+                    var output = GetMapper().Map<RequestResponseDso>(result);
+                    _logger.LogInformation("Created Request entity successfully.");
+                    return output;
+                }
+
+                else
+                {
+                    _logger.LogWarning("Space entity creation failed due to validation: {Error}", isConditionresult.Message);
+                       return null;
+                }
+             
             }
             catch (Exception ex)
             {
@@ -78,19 +115,7 @@ namespace ApiCore.Services.Services
         {
             try
             {
-
                 _logger.LogInformation("Retrieving all Request entities...");
-                //if (_userClaims.UserId!="")
-                //{
-
-                //    var customerId = _userClaims.CustomerId; 
-
-                    
-
-                //    //return GetMapper().Map<IEnumerable<RequestResponseDso>>(results);
-                //}
-
-
                 var results = await _builder.GetAllAsync();
                 return GetMapper().Map<IEnumerable<RequestResponseDso>>(results);
             }
@@ -233,6 +258,37 @@ namespace ApiCore.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Requests.");
+            }
+        }
+
+        public override async Task<PagedResponse<RequestResponseDso>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving all Request entities...");
+                var results = await _builder.GetAllAsync();
+                var response = await _builder.GetAllByAsync(conditions, options);
+                return response.ToResponse(GetMapper().Map<IEnumerable<RequestResponseDso>>(response.Data));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllAsync for Request entities.");
+                return null;
+            }
+        }
+
+        public override async Task<RequestResponseDso?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving Request entity...");
+                var results = await _builder.GetAllAsync();
+                return GetMapper().Map<RequestResponseDso>(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetOneByAsync  for Request entity.");
+                return null;
             }
         }
     }

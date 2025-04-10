@@ -2,6 +2,7 @@ using AutoGenerator;
 using AutoGenerator.Models;
 using AutoGenerator.Helper.Translation;
 using System;
+using ApiCore.DyModels.Dso.Responses;
 
 namespace ApiCore.DyModels.VMs
 {
@@ -33,6 +34,6 @@ namespace ApiCore.DyModels.VMs
         //
       //  public ICollection<SubscriptionOutputVM>? Subscriptions { get; set; }
         //
-        public ICollection<PlanFeatureOutputVM>? PlanFeatures { get; set; }
+        public ICollection<PlanResponseDso>? PlanFeatures { get; set; }
     }
 }

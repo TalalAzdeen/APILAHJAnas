@@ -10,7 +10,7 @@ namespace ApiCore.DyModels.Dso.Requests
     {
 
 
-        public RoleCase? RolesRequestService { get; set; }
+      
 
 
 

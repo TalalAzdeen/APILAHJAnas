@@ -13,9 +13,8 @@ using AutoGenerator.Repositorys.Share;
 using System.Linq.Expressions;
 using AutoGenerator.Repositorys.Base;
 using AutoGenerator;
+using AutoGenerator.Helper;
 using System;
- 
-using System.Data.Entity;
 
 namespace ApiCore.Repositorys.Share
 {
@@ -84,15 +83,7 @@ namespace ApiCore.Repositorys.Share
             try
             {
                 _logger.LogInformation("Retrieving all Plan entities...");
-                var item = await _builder.GetAllAsync();
-                //.Include(p => p.PlanFeatures)
-                //.ToListAsync();
-                if (item == null)
-                {
-                    _logger.LogWarning("No Plan entities found.");
-                    return Enumerable.Empty<PlanResponseShareDto>();
-                }
-                return MapToIEnumerableShareResponseDto(item);
+                return MapToIEnumerableShareResponseDto(await _builder.GetAllAsync());
             }
             catch (Exception ex)
             {
@@ -227,6 +218,11 @@ namespace ApiCore.Repositorys.Share
             }
         }
 
+        public override Task DeleteAsync(string id)
+        {
+            return _builder.DeleteAsync(id);
+        }
+
         public override async Task DeleteAsync(object value, string key = "Id")
         {
             try
@@ -253,6 +249,35 @@ namespace ApiCore.Repositorys.Share
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Plans.");
+            }
+        }
+
+        public override async Task<PagedResponse<PlanResponseShareDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving  Plan entities as pagination...");
+                return MapToPagedResponse(await _builder.GetAllByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetAllByAsync for Plan entities as pagination.");
+                return null;
+            }
+        }
+
+        public override async Task<PlanResponseShareDto?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving Plan entity...");
+                var results = await _builder.GetAllAsync();
+                return MapToShareResponseDto(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetOneByAsync  for Plan entity.");
+                return null;
             }
         }
     }

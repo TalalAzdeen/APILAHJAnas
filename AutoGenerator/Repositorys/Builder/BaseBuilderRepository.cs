@@ -1,5 +1,6 @@
 ﻿
 using AutoGenerator.Data;
+using AutoGenerator.Helper;
 using AutoGenerator.Repositorys.Base;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -30,7 +31,6 @@ namespace AutoGenerator.Repositorys.Builder
         public BaseBuilderRepository(DataContext dbContext, IMapper mapper, ILogger logger)
         {
 
-
             if (!IsAllowCreate())
             {
                 throw new InvalidOperationException("Creation of this repository is not allowed for the specified types.");
@@ -47,9 +47,7 @@ namespace AutoGenerator.Repositorys.Builder
         public async Task<IEnumerable<TBuildResponseDto>> GetAllAsync()
         {
             var entities = await _repository.GetAllAsync();
-            var item = _mapper.Map<IEnumerable<TBuildResponseDto>>(entities);
-            return item;
-          //  return entities.Select(entity => _mapper.Map<TBuildResponseDto>(entity));
+            return entities.Select(entity => _mapper.Map<TBuildResponseDto>(entity));
         }
 
         public async Task<TBuildResponseDto?> GetByIdAsync(string id)
@@ -68,7 +66,6 @@ namespace AutoGenerator.Repositorys.Builder
         {
             var entities = _repository.GetAll();
             return entities.Select(e => _mapper.Map<TBuildResponseDto>(e)).AsQueryable();
-
         }
 
         public IQueryable<TBuildResponseDto> GetQueryable(bool noTracking = true, params string[]? includes)
@@ -171,10 +168,6 @@ namespace AutoGenerator.Repositorys.Builder
             return entities;
         }
 
-
-
-
-
         private static bool IsAllowCreate()
         {
             return typeof(ITModel).IsAssignableFrom(typeof(TModel)) &&
@@ -244,7 +237,6 @@ namespace AutoGenerator.Repositorys.Builder
             return entity != null ? _mapper.Map<TBuildResponseDto>(entity) : null;
         }
 
-
         public async Task<bool> ExistsAsync(object value, string name = "Id")
         {
             return await _repository.ExistsAsync(e => EF.Property<object>(e, name) == value);
@@ -263,8 +255,7 @@ namespace AutoGenerator.Repositorys.Builder
 
         public async Task DeleteAsync(object value, string key = "Id")
         {
-              await _repository.RemoveAsync(e => EF.Property<object>(e, key) == value);
-           
+            await _repository.RemoveAsync(e => EF.Property<object>(e, key) == key);
         }
 
         public async Task DeleteRange(List<TBuildRequestDto> entities)
@@ -275,6 +266,29 @@ namespace AutoGenerator.Repositorys.Builder
         public async Task DeleteAllAsync()
         {
             await _repository.RemoveAllAsync();
+        }
+
+
+        public async Task<PagedResponse<TBuildResponseDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            var response = await _repository.GetAllByAsync(conditions, options);
+            return MapToPagedResponse(response);
+        }
+        public async Task<TBuildResponseDto> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            var item = await _repository.GetOneByAsync(conditions, options);
+            var response = _mapper.Map<TBuildResponseDto>(item);
+            return response;
+        }
+
+        protected PagedResponse<TBuildResponseDto> MapToPagedResponse(PagedResponse<TModel> response)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response), "The pagination cannot be null.");
+            }
+
+            return response.ToResponse(_mapper.Map<IEnumerable<TBuildResponseDto>>(response.Data));
         }
     }
 

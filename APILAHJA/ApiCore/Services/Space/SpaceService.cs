@@ -12,29 +12,28 @@ using ApiCore.Repositorys.Share;
 using System.Linq.Expressions;
 using ApiCore.Repositorys.Builder;
 using AutoGenerator.Repositorys.Base;
+using AutoGenerator.Helper;
 using System;
-using APILAHJA.ApiCore.Helper;
-using AutoGenerator.Helper.Translation;
-using Stripe;
-using TEP.Helper.Extensions;
-using AutoGenerator.Utilities;
-using Api.VM;
+using AutoGenerator.Conditions;
+using ApiCore.Validators;
+using ApiCore.DyModels.Dso.ResponseFilters;
 
 namespace ApiCore.Services.Services
 {
     public class SpaceService : BaseService<SpaceRequestDso, SpaceResponseDso>, IUseSpaceService
     {
         private readonly ISpaceShareRepository _builder;
-        private readonly IUserClaims _userClaims;
-        private readonly ISubscriptionShareRepository _subscriptionShare;
-        public SpaceService(ISpaceShareRepository buildSpaceShareRepository, IMapper mapper, ILoggerFactory logger, ISubscriptionShareRepository subscriptionShare) : base(mapper, logger)
+        private readonly IConditionChecker _checker;
+        public SpaceService(ISpaceShareRepository buildSpaceShareRepository, IMapper mapper, ILoggerFactory logger, IConditionChecker checker) : base(mapper, logger)
         {
             _builder = buildSpaceShareRepository;
-            _subscriptionShare = subscriptionShare;
+            _checker = checker;
         }
 
         public override Task<int> CountAsync()
         {
+
+
             try
             {
                 _logger.LogInformation("Counting Space entities...");
@@ -49,47 +48,35 @@ namespace ApiCore.Services.Services
 
         public override async Task<SpaceResponseDso> CreateAsync(SpaceRequestDso entity)
         {
+
+           
             try
             {
-                _logger.LogInformation("Creating new Space entity...");
-
-
-                //entity.roleCase.Add("space-limit", _ =>
-                //    subscriptionService.IsSpaceAvailable().Result ? new object() : null);
-
-
-                //entity.roleCase.Add("has-services", _ =>
-                //       (_userClaims.ServicesIds != null && _userClaims.ServicesIds.Count > 0) ? new object() : null);
-
-                //entity. roleCase.Add("has-createspace-service", _ =>
+                
+                
+                //string error;
+                //_logger.LogInformation("Creating new Space entity...");
+                //var resultt = _checker.CheckWithError(SpaceValidatorStates.IsFull, entity, out error);
+                //if (!resultt)
                 //{
-                //    var service = serviceRepository.GetByName("createspace").Result;
-                //    return _userClaims.ServicesIds.Contains(service.Id) ? new object() : null;
-                //});
+                //    _logger.LogWarning("Space entity creation failed due to validation: {Error}", error);
+                //    return null;
+                //}
 
 
+                var check= _checker.Check(SpaceValidatorStates.IsFull, entity);
+                if (check)
+                {
+                    var result = await _builder.CreateAsync(entity);
+                    var output = GetMapper().Map<SpaceResponseDso>(result);
+                    _logger.LogInformation("Created Space entity successfully.");
+                    return output;
+                  
+                }
 
+                _logger.LogWarning("Space entity creation failed due to validation.");
+                return null;
 
-
-                //var preview = entity.roleCase.PreviewRoles();
-
-                //if (!preview["space-limit"])
-                //    throw new  ExceptionHandlerExtensions(HandelErrors.Problem("Create space", "You cannot add a space because you have reached the allowed limit."));
-
-                //if (!preview["has-services"])
-                //    return BadRequest(HandelErrors.Problem("Create space", "This session does not have service create space."));
-
-                //if (!preview["has-createspace-service"])
-                //    return NotFound(HandelErrors.Problem("Create space", "You cannot add a space because this session does not belong to service create space."));
-
-               // item.SubscriptionId = (await _subscriptionShare.GetSubscription()).Id;
-
-
-
-                var result = await _builder.CreateAsync(entity);
-                var output = GetMapper().Map<SpaceResponseDso>(result);
-                _logger.LogInformation("Created Space entity successfully.");
-                return output;
             }
             catch (Exception ex)
             {
@@ -98,20 +85,17 @@ namespace ApiCore.Services.Services
             }
         }
 
-        public override async Task DeleteAsync(string id)
+        public override Task DeleteAsync(string id)
         {
             try
             {
                 _logger.LogInformation($"Deleting Space entity with ID: {id}...");
-                // await  _builder.DeleteAsync(id);
-                await _builder.DeleteAsync(id);
-
-                
+                return _builder.DeleteAsync(id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while deleting Space entity with ID: {id}.");
-              //  return Task.CompletedTask;
+                return Task.CompletedTask;
             }
         }
 
@@ -121,9 +105,7 @@ namespace ApiCore.Services.Services
             {
                 _logger.LogInformation("Retrieving all Space entities...");
                 var results = await _builder.GetAllAsync();
-                var result= GetMapper().Map<IEnumerable<SpaceResponseDso>>(results);
-
-                return result;
+                return GetMapper().Map<IEnumerable<SpaceResponseDso>>(results);
             }
             catch (Exception ex)
             {
@@ -264,6 +246,37 @@ namespace ApiCore.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Spaces.");
+            }
+        }
+
+        public override async Task<PagedResponse<SpaceResponseDso>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving all Space entities...");
+                var results = await _builder.GetAllAsync();
+                var response = await _builder.GetAllByAsync(conditions, options);
+                return response.ToResponse(GetMapper().Map<IEnumerable<SpaceResponseDso>>(response.Data));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllAsync for Space entities.");
+                return null;
+            }
+        }
+
+        public override async Task<SpaceResponseDso?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving Space entity...");
+                var results = await _builder.GetAllAsync();
+                return GetMapper().Map<SpaceResponseDso>(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetOneByAsync  for Space entity.");
+                return null;
             }
         }
     }

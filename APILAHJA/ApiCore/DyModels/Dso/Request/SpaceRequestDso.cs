@@ -7,5 +7,6 @@ namespace ApiCore.DyModels.Dso.Requests
 {
     public class SpaceRequestDso : SpaceRequestShareDto, ITDso
     {
+        
     }
 }

@@ -9,7 +9,7 @@ namespace ApiCore.DyModels.Dto.Share.Requests
 {
     public class RequestRequestShareDto : RequestRequestBuildDto, ITShareDto
     {
-        public RoleCase? RolesRequestShare { get; set; }
+       
 
 
         

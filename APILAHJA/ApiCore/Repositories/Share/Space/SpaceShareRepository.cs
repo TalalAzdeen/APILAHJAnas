@@ -13,6 +13,7 @@ using AutoGenerator.Repositorys.Share;
 using System.Linq.Expressions;
 using AutoGenerator.Repositorys.Base;
 using AutoGenerator;
+using AutoGenerator.Helper;
 using System;
 
 namespace ApiCore.Repositorys.Share
@@ -82,15 +83,7 @@ namespace ApiCore.Repositorys.Share
             try
             {
                 _logger.LogInformation("Retrieving all Space entities...");
-                var item = await _builder.GetAllAsync();
-                if (item == null)
-                {
-                    _logger.LogWarning("No Space entities found.");
-                    return null;
-                }
-                var result= MapToIEnumerableShareResponseDto(item);
-                return result;
-
+                return MapToIEnumerableShareResponseDto(await _builder.GetAllAsync());
             }
             catch (Exception ex)
             {
@@ -225,37 +218,23 @@ namespace ApiCore.Repositorys.Share
             }
         }
 
-        public override async Task DeleteAsync(string key)
+        public override Task DeleteAsync(string id)
         {
-            try
-            {
-
-                _logger.LogInformation("Deleting Space with {Key}: {Value}", key, key);
-                await _builder.DeleteAsync(key);
-
-                _logger.LogInformation("Space with {Key}: {Value} deleted successfully.", key, key);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while deleting Space with {Key}: {Value}", key, key);
-            }
+            return _builder.DeleteAsync(id);
         }
+
         public override async Task DeleteAsync(object value, string key = "Id")
         {
             try
             {
                 _logger.LogInformation("Deleting Space with {Key}: {Value}", key, value);
                 await _builder.DeleteAsync(value, key);
-
                 _logger.LogInformation("Space with {Key}: {Value} deleted successfully.", key, value);
-                
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting Space with {Key}: {Value}", key, value);
             }
-             
         }
 
         public override async Task DeleteRange(List<SpaceRequestShareDto> entities)
@@ -270,6 +249,35 @@ namespace ApiCore.Repositorys.Share
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Spaces.");
+            }
+        }
+
+        public override async Task<PagedResponse<SpaceResponseShareDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving  Space entities as pagination...");
+                return MapToPagedResponse(await _builder.GetAllByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetAllByAsync for Space entities as pagination.");
+                return null;
+            }
+        }
+
+        public override async Task<SpaceResponseShareDto?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving Space entity...");
+                var results = await _builder.GetAllAsync();
+                return MapToShareResponseDto(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetOneByAsync  for Space entity.");
+                return null;
             }
         }
     }

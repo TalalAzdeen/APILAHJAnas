@@ -29,6 +29,6 @@ namespace ApiCore.DyModels.Dto.Build.Responses
         /// RequestId property for DTO.
         /// </summary>
         public String? RequestId { get; set; }
-        public RequestResponseBuildDto? Request { get; set; }
+        //public RequestResponseBuildDto? Request { get; set; }
     }
 }

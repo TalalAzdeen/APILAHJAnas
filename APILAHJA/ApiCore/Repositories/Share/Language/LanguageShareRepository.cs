@@ -13,6 +13,7 @@ using AutoGenerator.Repositorys.Share;
 using System.Linq.Expressions;
 using AutoGenerator.Repositorys.Base;
 using AutoGenerator;
+using AutoGenerator.Helper;
 using System;
 
 namespace ApiCore.Repositorys.Share
@@ -217,6 +218,11 @@ namespace ApiCore.Repositorys.Share
             }
         }
 
+        public override Task DeleteAsync(string id)
+        {
+            return _builder.DeleteAsync(id);
+        }
+
         public override async Task DeleteAsync(object value, string key = "Id")
         {
             try
@@ -243,6 +249,35 @@ namespace ApiCore.Repositorys.Share
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Languages.");
+            }
+        }
+
+        public override async Task<PagedResponse<LanguageResponseShareDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving  Language entities as pagination...");
+                return MapToPagedResponse(await _builder.GetAllByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetAllByAsync for Language entities as pagination.");
+                return null;
+            }
+        }
+
+        public override async Task<LanguageResponseShareDto?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving Language entity...");
+                var results = await _builder.GetAllAsync();
+                return MapToShareResponseDto(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetOneByAsync  for Language entity.");
+                return null;
             }
         }
     }

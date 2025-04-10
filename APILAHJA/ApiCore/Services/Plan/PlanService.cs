@@ -1,27 +1,33 @@
-using AutoGenerator;
-using AutoMapper;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using AutoGenerator.Services.Base;
 using ApiCore.DyModels.Dso.Requests;
 using ApiCore.DyModels.Dso.Responses;
-using AutoGenerator.Models;
 using ApiCore.DyModels.Dto.Share.Requests;
 using ApiCore.DyModels.Dto.Share.Responses;
-using ApiCore.Repositorys.Share;
-using System.Linq.Expressions;
 using ApiCore.Repositorys.Builder;
+using ApiCore.Repositorys.Share;
+using ApiCore.Validators;
+using AutoGenerator;
+using AutoGenerator.Conditions;
+using AutoGenerator.Helper;
+using AutoGenerator.Models;
 using AutoGenerator.Repositorys.Base;
+using AutoGenerator.Services.Base;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace ApiCore.Services.Services
 {
     public class PlanService : BaseService<PlanRequestDso, PlanResponseDso>, IUsePlanService
     {
         private readonly IPlanShareRepository _builder;
-        public PlanService(IPlanShareRepository buildPlanShareRepository, IMapper mapper, ILoggerFactory logger) : base(mapper, logger)
+        private readonly IConditionChecker _checker;
+        public PlanService(IPlanShareRepository buildPlanShareRepository, IMapper mapper, ILoggerFactory logger,
+            IConditionChecker checker) : base(mapper, logger)
         {
             _builder = buildPlanShareRepository;
+            _checker = checker;
         }
 
         public override Task<int> CountAsync()
@@ -40,6 +46,10 @@ namespace ApiCore.Services.Services
 
         public override async Task<PlanResponseDso> CreateAsync(PlanRequestDso entity)
         {
+
+            
+
+            _checker.Check(SpaceValidatorStates.IsFull, entity);
             try
             {
                 _logger.LogInformation("Creating new Plan entity...");
@@ -216,6 +226,37 @@ namespace ApiCore.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple Plans.");
+            }
+        }
+
+        public override async Task<PagedResponse<PlanResponseDso>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving all Plan entities...");
+                var results = await _builder.GetAllAsync();
+                var response = await _builder.GetAllByAsync(conditions, options);
+                return response.ToResponse(GetMapper().Map<IEnumerable<PlanResponseDso>>(response.Data));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllAsync for Plan entities.");
+                return null;
+            }
+        }
+
+        public override async Task<PlanResponseDso?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving Plan entity...");
+                var results = await _builder.GetAllAsync();
+                return GetMapper().Map<PlanResponseDso>(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetOneByAsync  for Plan entity.");
+                return null;
             }
         }
     }

@@ -44,6 +44,10 @@ namespace ApiCore.DyModels.Dto.Build.Responses
         /// <summary>
         /// UserId property for DTO.
         /// </summary>
+        /// 
+
+        public String? SpaceId { get; set; }
+
         public String? UserId { get; set; }
        // public ApplicationUserResponseBuildDto? User { get; set; }
         /// <summary>
@@ -59,7 +63,7 @@ namespace ApiCore.DyModels.Dto.Build.Responses
         /// <summary>
         /// SpaceId property for DTO.
         /// </summary>
-        public String? SpaceId { get; set; }
+      
         //public SpaceResponseBuildDto? Space { get; set; }
         public ICollection<EventRequestResponseBuildDto>? Events { get; set; }
     }

@@ -1,12 +1,20 @@
+using AutoGenerator.Data;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using AutoGenerator.Repositorys.Builder;
 using ApiCore.DyModels.Dto.Build.Requests;
 using ApiCore.DyModels.Dto.Build.Responses;
+using AutoGenerator.Models;
 using ApiCore.DyModels.Dto.Share.Requests;
 using ApiCore.DyModels.Dto.Share.Responses;
 using ApiCore.Repositorys.Builder;
-using AutoGenerator;
-using AutoGenerator.Data;
 using AutoGenerator.Repositorys.Share;
-using AutoMapper;
+using System.Linq.Expressions;
+using AutoGenerator.Repositorys.Base;
+using AutoGenerator;
+using AutoGenerator.Helper;
+using System;
 
 namespace ApiCore.Repositorys.Share
 {
@@ -24,7 +32,7 @@ namespace ApiCore.Repositorys.Share
         {
             // Initialize the builder repository.
             _builder = new ApplicationUserBuilderRepository(dbContext, mapper, logger.CreateLogger(typeof(ApplicationUserShareRepository).FullName));
-            // Initialize the logger.
+        // Initialize the logger.
         }
 
         /// <summary>
@@ -143,7 +151,6 @@ namespace ApiCore.Repositorys.Share
             try
             {
                 _logger.LogInformation("Updating ApplicationUser entity...");
-
                 return MapToShareResponseDto(await _builder.UpdateAsync(entity));
             }
             catch (Exception ex)
@@ -211,6 +218,11 @@ namespace ApiCore.Repositorys.Share
             }
         }
 
+        public override Task DeleteAsync(string id)
+        {
+            return _builder.DeleteAsync(id);
+        }
+
         public override async Task DeleteAsync(object value, string key = "Id")
         {
             try
@@ -237,6 +249,35 @@ namespace ApiCore.Repositorys.Share
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple ApplicationUsers.");
+            }
+        }
+
+        public override async Task<PagedResponse<ApplicationUserResponseShareDto>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving  ApplicationUser entities as pagination...");
+                return MapToPagedResponse(await _builder.GetAllByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetAllByAsync for ApplicationUser entities as pagination.");
+                return null;
+            }
+        }
+
+        public override async Task<ApplicationUserResponseShareDto?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("[Share]Retrieving ApplicationUser entity...");
+                var results = await _builder.GetAllAsync();
+                return MapToShareResponseDto(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Share]Error in GetOneByAsync  for ApplicationUser entity.");
+                return null;
             }
         }
     }

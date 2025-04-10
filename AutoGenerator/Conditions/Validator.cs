@@ -3,7 +3,7 @@
 namespace AutoGenerator.Conditions
 {
 
- 
+
 
     /// <summary>
     /// Invoice  property for VM Create.
@@ -12,9 +12,9 @@ namespace AutoGenerator.Conditions
 
     public interface IValidator<TContext>
     {
-       Task<bool>  Validate(TContext entity);
+        Task<bool> Validate(TContext entity);
 
-      
+
     }
 
     public interface ITValidator
@@ -30,25 +30,29 @@ namespace AutoGenerator.Conditions
 
         protected readonly ConditionProvider<EValidator> _provider;
 
-        
 
-
-     
-
+        protected readonly IConditionChecker _checker;
 
 
 
 
 
 
-        public BaseValidator()
+
+
+
+
+
+        public BaseValidator(IConditionChecker checker)
         {
             _provider = new ConditionProvider<EValidator>();
-            
+            _checker = checker;
+
 
 
             InitializeConditions();
-            
+            _checker.RegisterProvider(_provider);
+
 
         }
 
@@ -62,8 +66,8 @@ namespace AutoGenerator.Conditions
             throw new NotImplementedException();
         }
 
-        abstract protected  void InitializeConditions();
-        
+        abstract protected void InitializeConditions();
+
 
     }
 }

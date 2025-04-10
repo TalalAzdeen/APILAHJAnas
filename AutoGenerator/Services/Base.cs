@@ -1,4 +1,5 @@
 ﻿
+using AutoGenerator.Helper;
 using AutoGenerator.Repositorys.Base;
 using AutoMapper;
 
@@ -101,7 +102,7 @@ namespace AutoGenerator.Services.Base
             throw new NotImplementedException();
         }
 
-        public virtual  Task<bool> ExistsAsync(object value, string name = "Id")
+        public virtual Task<bool> ExistsAsync(object value, string name = "Id")
         {
             throw new NotImplementedException();
         }
@@ -116,7 +117,7 @@ namespace AutoGenerator.Services.Base
             throw new NotImplementedException();
         }
 
-        public virtual  Task DeleteAllAsync()
+        public virtual Task DeleteAllAsync()
         {
             throw new NotImplementedException();
         }
@@ -132,6 +133,16 @@ namespace AutoGenerator.Services.Base
         }
 
         public virtual Task DeleteRange(List<TServiceRequestDso> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<PagedResponse<TServiceResponseDso>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<TServiceResponseDso?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
         {
             throw new NotImplementedException();
         }

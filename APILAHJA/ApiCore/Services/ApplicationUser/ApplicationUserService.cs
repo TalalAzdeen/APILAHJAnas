@@ -1,33 +1,30 @@
+using AutoGenerator;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using AutoGenerator.Services.Base;
 using ApiCore.DyModels.Dso.Requests;
 using ApiCore.DyModels.Dso.Responses;
+using AutoGenerator.Models;
 using ApiCore.DyModels.Dto.Share.Requests;
+using ApiCore.DyModels.Dto.Share.Responses;
 using ApiCore.Repositorys.Share;
-using APILAHJA.Utilities;
-using AutoGenerator;
-using AutoGenerator.Services.Base;
-using AutoMapper;
+using System.Linq.Expressions;
+using ApiCore.Repositorys.Builder;
+using AutoGenerator.Repositorys.Base;
+using AutoGenerator.Helper;
+using System;
 
 namespace ApiCore.Services.Services
 {
     public class ApplicationUserService : BaseService<ApplicationUserRequestDso, ApplicationUserResponseDso>, IUseApplicationUserService
     {
         private readonly IApplicationUserShareRepository _builder;
-        private readonly IUserClaimsHelper _userClaims;
-
-        public ApplicationUserService(
-            IApplicationUserShareRepository buildApplicationUserShareRepository,
-            IMapper mapper,
-            IUserClaimsHelper userClaims,
-            ILoggerFactory logger) : base(mapper, logger)
+        public ApplicationUserService(IApplicationUserShareRepository buildApplicationUserShareRepository, IMapper mapper, ILoggerFactory logger) : base(mapper, logger)
         {
             _builder = buildApplicationUserShareRepository;
-            _userClaims = userClaims;
         }
 
-        public async Task<ApplicationUserResponseDso> GetUser()
-        {
-            return GetMapper().Map<ApplicationUserResponseDso>(await _builder.GetByIdAsync(_userClaims.UserId));
-        }
         public override Task<int> CountAsync()
         {
             try
@@ -220,6 +217,37 @@ namespace ApiCore.Services.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting multiple ApplicationUsers.");
+            }
+        }
+
+        public override async Task<PagedResponse<ApplicationUserResponseDso>> GetAllByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving all ApplicationUser entities...");
+                var results = await _builder.GetAllAsync();
+                var response = await _builder.GetAllByAsync(conditions, options);
+                return response.ToResponse(GetMapper().Map<IEnumerable<ApplicationUserResponseDso>>(response.Data));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAllAsync for ApplicationUser entities.");
+                return null;
+            }
+        }
+
+        public override async Task<ApplicationUserResponseDso?> GetOneByAsync(List<FilterCondition> conditions, ParamOptions? options = null)
+        {
+            try
+            {
+                _logger.LogInformation("Retrieving ApplicationUser entity...");
+                var results = await _builder.GetAllAsync();
+                return GetMapper().Map<ApplicationUserResponseDso>(await _builder.GetOneByAsync(conditions, options));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetOneByAsync  for ApplicationUser entity.");
+                return null;
             }
         }
     }
